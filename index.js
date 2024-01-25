@@ -12,25 +12,22 @@ app.use(cors({optionsSuccessStatus: 200}));  // some legacy browsers choke on 20
 app.use(express.static('public'));
 
 // http://expressjs.com/en/starter/basic-routing.html
-app.get("/", function (req, res) {
+app.get("/", (req, res)=>{
   res.sendFile(__dirname + '/views/index.html');
 });
 
+app.get("/api/:date?", (req, res) => {
+  let calcDate = isNaN(parseInt(req.params.date)) ? req.params.date : parseInt(req.params.date);
+  console.log(calcDate);
 
-// your first API endpoint... 
-app.get("/api/hello", function (req, res) {
-  res.json({greeting: 'hello API'});
+  let currentDate = new Date(calcDate);
+  let errorResponse = {"error": `${currentDate}`};
+  let validResponse = {"unix": currentDate.getTime(), "utc": `${currentDate.toUTCString()}`};
+  console.log(currentDate);
+
+  currentDate === "Invalid Date" ? res.json(errorResponse) : res.json(validResponse); 
 });
 
-app.get("/api/:date?", function (req, res) {
-  let calcDate = isNaN(req.params.date) ? req.params.date : parseInt(req.params.date)
-  console.log(calcDate)
-  let currentDate = new Date(calcDate)
-  let errorResponse = {"error": `${currentDate}`}
-  let validResponse = {"unix": currentDate.getTime(), "utc": `${currentDate.toUTCString()}`}
-  console.log(currentDate)
-  currentDate == "Invalid Date" ? res.json(errorResponse) : res.json(validResponse); 
-});
 
 // listen for requests :)
 app.listen(port, () => {
